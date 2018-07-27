@@ -24,7 +24,7 @@ class GNodeUtilsTest {
                 new GNodeImpl("D"),
                 new GNodeImpl("A"));
         assertThat(walkGraph(A),
-                contains(new GNodeImpl("A"), new GNodeImpl("B"), new GNodeImpl("D"), new GNodeImpl("E"), new GNodeImpl("F")));
+                containsInAnyOrder(new GNodeImpl("A"), new GNodeImpl("B"), new GNodeImpl("D"), new GNodeImpl("E"), new GNodeImpl("F")));
     }
 
     @Test
