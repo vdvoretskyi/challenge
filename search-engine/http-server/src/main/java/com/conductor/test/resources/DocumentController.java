@@ -10,6 +10,8 @@ import javax.inject.Inject;
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.Optional;
 import java.util.Set;
 
@@ -34,14 +36,16 @@ public class DocumentController {
     }
 
     @RequestMapping(value = "/document", method = RequestMethod.GET)
-    public ResponseData<String> getDocument(@RequestParam(name = "key") @NotNull String key) {
-        final String result = Optional.ofNullable(searchEngine.get(key)).map(Document::getWords).orElse("");
+    public ResponseData<String> getDocument(@RequestParam(name = "key") @NotNull String key) throws UnsupportedEncodingException {
+        final String decodedKey = URLDecoder.decode(key, "UTF-8");
+        final String result = Optional.ofNullable(searchEngine.get(decodedKey)).map(Document::getWords).orElse("");
         return new ResponseData<>(result);
     }
 
     @RequestMapping(value = "/document/search", method = RequestMethod.GET)
-    public ResponseData<Set<String>> searchDocuments(@RequestParam(name = "tokens") @NotEmpty String tokens) {
-        return new ResponseData<>(searchEngine.search(StringUtils.splitByWords(tokens)));
+    public ResponseData<String> searchDocuments(@RequestParam(name = "tokens") @NotEmpty String tokens) throws UnsupportedEncodingException {
+        final Set<String> keys = searchEngine.search(StringUtils.splitByWords(URLDecoder.decode(tokens, "UTF-8")));
+        return new ResponseData<>(StringUtils.combine(keys, " "));
     }
 
     private static final class UploadDocumentRequest {
